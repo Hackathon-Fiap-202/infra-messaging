@@ -35,5 +35,6 @@ variable "ses_email" {
 
 variable "lambda_role_arn" {
   type = string
+  default = "arn:aws:iam::123456789012:role/lambda-execution-role"
 }
 
