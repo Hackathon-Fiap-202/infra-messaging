@@ -27,11 +27,6 @@ jobs:
         with:
           terraform_version: 1.6.6
 
-
-      - name: Debug ARN
-        run: |
-          echo "ARN = arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-action-role"
-
       - name: Cache Terraform providers
         uses: actions/cache@v3
         with:
