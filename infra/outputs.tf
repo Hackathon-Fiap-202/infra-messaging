@@ -34,15 +34,3 @@ output "ses_email_identity_arns" {
   description = "Mapa de ARNs das identidades de email do SES (chave: identificador da identidade, valor: ARN)"
   value       = { for k, v in module.ses : k => v.ses_email_identity_arn }
 }
-
-output "ses_email_identities" {
-  description = "Mapa completo com todas as informações das identidades SES"
-  value = {
-    for k, v in module.ses : k => {
-      arn                    = v.ses_email_identity_arn
-      email                  = v.ses_email_identity_email
-      configuration_set_id   = v.ses_configuration_set_id
-      configuration_set_name = v.ses_configuration_set_name
-    }
-  }
-}
