@@ -21,6 +21,6 @@ module "ses" {
   email_address = var.ses_email
 
   allowed_principals = [
-    var.lambda_role_arn
+    var.role_arn
   ]
 }
