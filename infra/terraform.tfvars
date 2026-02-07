@@ -5,8 +5,8 @@ tags = {
 }
 
 sqs_queues = {
-  "video-update-queue" = {
-    queue_name                 = "video-update-queue"
+  "video-process-command" = {
+    queue_name                 = "video-process-command"
     delay_seconds              = 0
     max_message_size           = 262144
     message_retention_seconds  = 345600
@@ -15,8 +15,8 @@ sqs_queues = {
     max_receive_count          = 3
     enable_queue_policy        = false
   },
-  "proccess-video-queue" = {
-    queue_name                 = "proccess-video-queue"
+  "video-updated-event" = {
+    queue_name                 = "video-updated-event"
     delay_seconds              = 0
     max_message_size           = 262144
     message_retention_seconds  = 345600
@@ -25,8 +25,8 @@ sqs_queues = {
     max_receive_count          = 3
     enable_queue_policy        = false
   },
-  "video-uploaded-queue" = {
-    queue_name                 = "video-uploaded-queue"
+  "video-uploaded-event" = {
+    queue_name                 = "video-uploaded-event"
     delay_seconds              = 0
     max_message_size           = 262144
     message_retention_seconds  = 345600
@@ -38,4 +38,4 @@ sqs_queues = {
 }
 
 ses_email = "framenextime@gmail.com"
-role_arn = "arn:aws:iam::383349724220:root"
+role_arn  = "arn:aws:iam::383349724220:root"
