@@ -28,6 +28,6 @@ module "ses" {
 module "s3" {
   source = "./modules/s3"
   bucket_name = var.bucket_name
-  sqs_queue_url = module.sqs.sqs_queue_url["video-uploaded-event"]
-  sqs_queue_arn = module.sqs.sqs_queue_arn["video-uploaded-event"]
+  sqs_queue_arn = module.sqs["video-uploaded-event"].sqs_queue_arn
+  sqs_queue_url = module.sqs["video-uploaded-event"].sqs_queue_url
 }
