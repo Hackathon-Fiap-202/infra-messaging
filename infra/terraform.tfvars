@@ -39,3 +39,4 @@ sqs_queues = {
 
 ses_email = "framenextime@gmail.com"
 role_arn  = "arn:aws:iam::383349724220:root"
+bucket_name = "nextime-frame-proccess-bucket"
