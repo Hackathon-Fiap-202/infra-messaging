@@ -1,6 +1,6 @@
 # Infraestrutura de Mensageria - AWS
 
-Repositório contendo a infraestrutura como código (IaC) para serviços de mensageria na AWS, utilizando Terraform. Este projeto gerencia recursos de **SQS** (Simple Queue Service) e **SES** (Simple Email Service) de forma modular e reutilizável.
+Repositório contendo a infraestrutura como código (IaC) para serviços de mensageria na AWS, utilizando Terraform. Este projeto gerencia recursos de **SQS** (Simple Queue Service), **SES** (Simple Email Service) e **S3** (Simple Storage Service) de forma modular e reutilizável.
 
 ## 📋 Índice
 
@@ -10,6 +10,7 @@ Repositório contendo a infraestrutura como código (IaC) para serviços de mens
 - [Módulos](#módulos)
   - [Módulo SQS](#módulo-sqs)
   - [Módulo SES](#módulo-ses)
+  - [Módulo S3](#módulo-s3)
 - [Configuração](#configuração)
 - [Uso](#uso)
 - [Outputs](#outputs)
@@ -21,6 +22,7 @@ Este projeto fornece uma infraestrutura completa para gerenciamento de mensageri
 
 - **Criação de múltiplas filas SQS** com configurações personalizadas
 - **Configuração de identidades SES** para envio de emails
+- **Bucket S3** com notificações para filas SQS
 - **Políticas de acesso** configuráveis para segurança
 - **Suporte a Dead Letter Queues (DLQ)** para tratamento de mensagens falhas
 - **Criptografia com KMS** opcional
@@ -32,7 +34,7 @@ Antes de começar, certifique-se de ter instalado:
 
 - [Terraform](https://www.terraform.io/downloads) >= 1.0
 - [AWS CLI](https://aws.amazon.com/cli/) configurado com credenciais apropriadas
-- Acesso a uma conta AWS com permissões para criar recursos SQS e SES
+- Acesso a uma conta AWS com permissões para criar recursos SQS, SES e S3
 - Bucket S3 configurado para armazenar o state do Terraform (veja [Backend do Terraform](#backend-do-terraform))
 
 ## 📁 Estrutura do Projeto
@@ -50,10 +52,14 @@ infra-messaging/
 │       │   ├── main.tf         # Recursos SQS
 │       │   ├── variables.tf    # Variáveis do módulo SQS
 │       │   └── outputs.tf       # Outputs do módulo SQS
-│       └── ses/
-│           ├── main.tf         # Recursos SES
-│           ├── variables.tf    # Variáveis do módulo SES
-│           └── outputs.tf      # Outputs do módulo SES
+│       ├── ses/
+│       │   ├── main.tf         # Recursos SES
+│       │   ├── variables.tf    # Variáveis do módulo SES
+│       │   └── outputs.tf      # Outputs do módulo SES
+│       └── s3/
+│           ├── main.tf         # Recursos S3
+│           ├── variables.tf    # Variáveis do módulo S3
+│           └── outputs.tf      # Outputs do módulo S3
 └── README.md
 ```
 
@@ -78,11 +84,15 @@ O módulo SQS permite criar filas de mensagens com as seguintes funcionalidades:
 | `delay_seconds` | `number` | Atraso antes das mensagens ficarem disponíveis | `0` |
 | `max_message_size` | `number` | Tamanho máximo da mensagem em bytes | `262144` (256 KB) |
 | `message_retention_seconds` | `number` | Tempo de retenção de mensagens não processadas | `345600` (4 dias) |
+| `receive_wait_time_seconds` | `number` | Tempo para long polling (0-20 segundos) | `0` |
 | `visibility_timeout_seconds` | `number` | Tempo de invisibilidade após recebimento | `30` |
 | `dead_letter_queue_arn` | `string` | ARN da DLQ (opcional) | `null` |
 | `max_receive_count` | `number` | Tentativas antes de enviar para DLQ | `3` |
 | `kms_master_key_id` | `string` | ID da chave KMS (opcional) | `null` |
+| `kms_data_key_reuse_period_seconds` | `number` | Período de reutilização da chave KMS | `300` |
 | `enable_queue_policy` | `bool` | Habilitar política customizada | `false` |
+| `queue_policy` | `string` | Política JSON para controle de acesso | `null` |
+| `tags` | `map(string)` | Tags adicionais para a fila | `{}` |
 
 #### Exemplo de Uso
 
@@ -121,11 +131,51 @@ O módulo SES configura identidades de email verificadas com políticas de acess
 #### Exemplo de Uso
 
 ```hcl
-ses_email        = "nextimeframe@gmail.com"
-lambda_role_arn = "arn:aws:iam::123456789012:role/lambda-send-email"
+ses_email = "framenextime@gmail.com"
+role_arn = "arn:aws:iam::383349724220:root"
 ```
 
-A política de identidade permite que a Lambda especificada envie emails usando o endereço verificado para qualquer destinatário.
+A política de identidade permite que os princípios especificados enviem emails usando o endereço verificado para qualquer destinatário.
+
+### Módulo S3
+
+O módulo S3 cria um bucket para processamento de arquivos com integração com SQS para notificações de eventos.
+
+#### Recursos Criados
+
+- **Bucket S3** com versionamento habilitado
+- **Criptografia server-side** (AES256)
+- **Notificação S3** para fila SQS quando objetos são criados
+- **Política SQS** que permite ao S3 enviar mensagens para a fila
+
+#### Variáveis Principais
+
+| Variável | Tipo | Descrição | Padrão |
+|----------|------|-----------|--------|
+| `bucket_name` | `string` | Nome do bucket S3 | - |
+| `environment` | `string` | Ambiente de deploy | `dev` |
+| `sqs_queue_url` | `string` | URL da fila SQS para notificações | - |
+| `sqs_queue_arn` | `string` | ARN da fila SQS para notificações | - |
+
+#### Funcionalidades
+
+- **Versionamento**: Habilitado por padrão para manter histórico de objetos
+- **Criptografia**: AES256 para segurança dos dados
+- **Notificações**: Eventos `s3:ObjectCreated:*` no prefixo `start-process/` são enviados para a fila SQS configurada
+- **Política de Acesso**: Permite apenas que o serviço S3 envie mensagens para a fila especificada
+
+#### Exemplo de Uso
+
+O módulo S3 é configurado automaticamente no `main.tf` principal, utilizando a fila SQS `video-uploaded-event`:
+
+```hcl
+module "s3" {
+  source = "./modules/s3"
+  bucket_name = var.bucket_name
+  sqs_queue_arn = module.sqs["video-uploaded-event"].sqs_queue_arn
+  sqs_queue_url = module.sqs["video-uploaded-event"].sqs_queue_url
+}
+```
 
 ## ⚙️ Configuração
 
@@ -135,8 +185,8 @@ O projeto utiliza um backend S3 para armazenar o state do Terraform. Configure o
 
 ```hcl
 backend "s3" {
-  bucket  = "nextime-food-state-bucket"
-  key     = "sqs/infra.tfstate"
+  bucket  = "nextime-frame-state-bucket"
+  key     = "messaging/infra.tfstate"
   region  = "us-east-1"
   encrypt = true
 }
@@ -150,15 +200,16 @@ Edite o arquivo `infra/terraform.tfvars` com seus valores:
 region = "us-east-1"
 
 tags = {
-  Owner = "nexTime-frame"
+  Owner = "nexTime-food"
 }
 
 sqs_queues = {
   # Suas filas SQS aqui
 }
 
-ses_email        = "seu-email@exemplo.com"
-lambda_role_arn = "arn:aws:iam::ACCOUNT_ID:role/sua-role-lambda"
+ses_email   = "seu-email@exemplo.com"
+role_arn    = "arn:aws:iam::ACCOUNT_ID:role/sua-role"
+bucket_name = "nome-do-seu-bucket"
 ```
 
 ### 3. Inicializar o Terraform
@@ -230,15 +281,22 @@ O projeto fornece os seguintes outputs:
 
 ### Outputs SQS
 
-- `sqs_queue_ids`: Mapa de IDs das filas
-- `sqs_queue_arns`: Mapa de ARNs das filas
-- `sqs_queue_urls`: Mapa de URLs das filas
-- `sqs_queue_names`: Mapa de nomes das filas
-- `sqs_queues`: Mapa completo com todas as informações
+- `sqs_queue_ids`: Mapa de IDs das filas (chave: identificador da fila, valor: ID da fila)
+- `sqs_queue_arns`: Mapa de ARNs das filas (chave: identificador da fila, valor: ARN da fila)
+- `sqs_queue_urls`: Mapa de URLs das filas (chave: identificador da fila, valor: URL da fila)
+- `sqs_queue_names`: Mapa de nomes das filas (chave: identificador da fila, valor: nome da fila)
+- `sqs_queues`: Mapa completo com todas as informações das filas (id, arn, url, name)
 
 ### Outputs SES
 
 - `ses_email_identity_arns`: ARN da identidade de email do SES
+
+### Outputs S3
+
+Os outputs do módulo S3 estão disponíveis através do módulo:
+
+- `s3_bucket_name`: Nome do bucket S3
+- `s3_bucket_arn`: ARN do bucket S3
 
 ### Exemplo de Uso dos Outputs
 
@@ -252,7 +310,8 @@ terraform output sqs_queue_arns
 # Usar em outro módulo Terraform
 module "outro_modulo" {
   source = "./outro"
-  queue_arn = module.sqs["video-uploaded-queue"].sqs_queue_arn
+  queue_arn = module.sqs["video-uploaded-event"].sqs_queue_arn
+  bucket_arn = module.s3.s3_bucket_arn
 }
 ```
 
@@ -278,10 +337,11 @@ O backend está configurado em `infra/providers.tf`. Certifique-se de que:
 ### Recomendações
 
 - **KMS**: Use criptografia KMS para filas SQS que contenham dados sensíveis
-- **Políticas IAM**: Configure políticas de acesso restritivas nas filas
+- **Políticas IAM**: Configure políticas de acesso restritivas nas filas e buckets
 - **Verificação de Email**: Sempre verifique emails no SES antes de usar em produção
 - **Tags**: Use tags para organização e controle de custos
 - **State**: Mantenha o state do Terraform em um bucket S3 privado e criptografado
+- **S3**: Configure políticas de bucket apropriadas para controlar acesso aos objetos
 
 ## 📝 Notas Importantes
 
@@ -291,6 +351,7 @@ O backend está configurado em `infra/providers.tf`. Certifique-se de que:
 - Em ambiente sandbox, o SES só permite envio para emails verificados
 - Para produção, solicite a remoção do sandbox no console AWS
 - A política de identidade permite envio para qualquer destinatário quando a identidade está verificada
+- A variável `role_arn` deve conter o ARN de uma role IAM ou conta AWS que terá permissão para enviar emails
 
 ### SQS
 
@@ -298,6 +359,15 @@ O backend está configurado em `infra/providers.tf`. Certifique-se de que:
 - Use filas FIFO se precisar de ordem garantida
 - Configure DLQ para evitar perda de mensagens
 - Ajuste `visibility_timeout_seconds` baseado no tempo de processamento
+- O `receive_wait_time_seconds` pode ser configurado para long polling (até 20 segundos)
+
+### S3
+
+- O bucket é criado com versionamento habilitado por padrão
+- A criptografia AES256 é aplicada automaticamente
+- As notificações são configuradas apenas para objetos criados no prefixo `start-process/`
+- A política SQS permite apenas que o serviço S3 da mesma conta envie mensagens
+- Certifique-se de que o nome do bucket seja único globalmente na AWS
 
 ## 🤝 Contribuindo
 
@@ -317,8 +387,13 @@ Este projeto é parte do projeto nexTime-frame.
 
 ---
 
+**Nota**: Este repositório faz parte de um projeto maior e está configurado para trabalhar em conjunto com outros módulos de infraestrutura. Certifique-se de que todas as dependências estejam configuradas antes de aplicar as mudanças.
+
+---
+
 Para mais informações sobre os serviços AWS utilizados:
 
 - [AWS SQS Documentation](https://docs.aws.amazon.com/sqs/)
 - [AWS SES Documentation](https://docs.aws.amazon.com/ses/)
+- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
 - [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)

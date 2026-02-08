@@ -1,7 +1,7 @@
 region = "us-east-1"
 
 tags = {
-  Owner = "nexTime-food"
+  Owner = "nexTime-frame"
 }
 
 sqs_queues = {
