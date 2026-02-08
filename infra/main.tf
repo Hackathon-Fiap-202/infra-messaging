@@ -28,4 +28,6 @@ module "ses" {
 module "s3" {
   source = "./modules/s3"
   bucket_name = var.bucket_name
+  sqs_queue_urls = module.sqs.sqs_queue_url
+  sqs_queue_arns = module.sqs.sqs_queue_arn
 }

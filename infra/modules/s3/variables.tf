@@ -8,3 +8,11 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "sqs_queue_urls" {
+  type = map(string)
+}
+
+variable "sqs_queue_arns" {
+  type = map(string)
+}
