@@ -10,9 +10,9 @@ variable "environment" {
 }
 
 variable "sqs_queue_url" {
-  type = map(string)
+  type = string
 }
 
 variable "sqs_queue_arn" {
-  type = map(string)
+  type = string
 }
