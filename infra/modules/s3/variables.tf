@@ -9,10 +9,10 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "sqs_queue_urls" {
+variable "sqs_queue_url" {
   type = map(string)
 }
 
-variable "sqs_queue_arns" {
+variable "sqs_queue_arn" {
   type = map(string)
 }
