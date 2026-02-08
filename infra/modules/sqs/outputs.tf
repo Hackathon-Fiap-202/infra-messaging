@@ -1,20 +1,31 @@
 output "sqs_queue_id" {
   description = "ID da fila SQS"
-  value       = aws_sqs_queue.main.id
-}
-
-output "sqs_queue_arn" {
-  description = "ARN da fila SQS"
-  value       = aws_sqs_queue.main.arn
+  value = {
+    for name, queue in aws_sqs_queue.main :
+    name => queue.id
+  }
 }
 
 output "sqs_queue_url" {
-  description = "URL da fila SQS"
-  value       = aws_sqs_queue.main.url
+  description = "URLs das filas SQS"
+  value = {
+    for name, queue in aws_sqs_queue.main :
+    name => queue.url
+  }
+}
+
+output "sqs_queue_arn" {
+  description = "ARNs das filas SQS"
+  value = {
+    for name, queue in aws_sqs_queue.main :
+    name => queue.arn
+  }
 }
 
 output "sqs_queue_name" {
-  description = "Nome da fila SQS"
-  value       = aws_sqs_queue.main.name
+  value = {
+    for name, queue in aws_sqs_queue.main :
+    name => queue.name
+  }
 }
 
