@@ -26,7 +26,7 @@ sqs_queues = {
     enable_queue_policy        = false
   },
   "video-uploaded-event" = {
-    queue_name                 = "video-uploaded-event"
+    queue_name                 = "video-processed-event"
     delay_seconds              = 0
     max_message_size           = 262144
     message_retention_seconds  = 345600
@@ -37,6 +37,6 @@ sqs_queues = {
   }
 }
 
-ses_email = "framenextime@gmail.com"
-role_arn  = "arn:aws:iam::383349724220:root"
+ses_email   = "framenextime@gmail.com"
+role_arn    = "arn:aws:iam::383349724220:root"
 bucket_name = "nextime-frame-proccess-bucket"
