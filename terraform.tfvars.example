@@ -1,0 +1,77 @@
+# =============================================================================
+# MESSAGING INFRASTRUCTURE TERRAFORM VARIABLES - LOCAL DEVELOPMENT
+# =============================================================================
+# Copy this file to terraform.tfvars and adjust values as needed
+
+# =============================================================================
+# LocalStack / AWS Configuration
+# =============================================================================
+
+aws_region        = "us-east-1"
+use_localstack    = true
+localstack_endpoint = "http://localhost:4566"
+
+# =============================================================================
+# SQS Queues Configuration
+# =============================================================================
+
+sqs_queues = {
+  "video-process-command" = {
+    queue_name = "video-process-command"
+    delay_seconds = 0
+    message_retention_seconds = 345600  # 4 days
+    visibility_timeout_seconds = 30
+    tags = {
+      Name = "video-process-command"
+      Type = "command"
+    }
+  },
+  "video-updated-event" = {
+    queue_name = "video-updated-event"
+    delay_seconds = 0
+    message_retention_seconds = 345600
+    visibility_timeout_seconds = 30
+    tags = {
+      Name = "video-updated-event"
+      Type = "event"
+    }
+  },
+  "video-processed-event" = {
+    queue_name = "video-processed-event"
+    delay_seconds = 0
+    message_retention_seconds = 345600
+    visibility_timeout_seconds = 30
+    tags = {
+      Name = "video-processed-event"
+      Type = "event"
+    }
+  }
+}
+
+# =============================================================================
+# SES Configuration
+# =============================================================================
+
+ses_email = "framenextime@gmail.com"
+
+# Role for SES (LocalStack uses default role)
+role_arn = "arn:aws:iam::000000000000:role/lambda-role"
+
+# =============================================================================
+# S3 Configuration
+# =============================================================================
+
+bucket_name = "video-input-storage"
+s3_input_bucket = "video-input-storage"
+s3_processed_bucket = "video-processed-storage"
+
+# =============================================================================
+# Tags Applied to All Resources
+# =============================================================================
+
+tags = {
+  Environment = "development"
+  Project     = "hackhaton"
+  ManagedBy   = "terraform"
+  CreatedAt   = "2026-03-07"
+}

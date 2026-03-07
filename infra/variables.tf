@@ -1,17 +1,40 @@
-variable "region" {
-  description = "Região da AWS"
+# ========================================
+# Core Variables
+# ========================================
+
+variable "aws_region" {
+  description = "AWS Region"
   type        = string
+  default     = "us-east-1"
+}
+
+variable "use_localstack" {
+  description = "Use LocalStack instead of AWS"
+  type        = bool
+  default     = true
+}
+
+variable "localstack_endpoint" {
+  description = "LocalStack endpoint URL"
+  type        = string
+  default     = "http://localhost:4566"
 }
 
 variable "tags" {
+  description = "Tags applied to resources"
   type        = map(string)
-  default     = {}
-  description = "Tags aplicadas aos recursos"
+  default = {
+    Environment = "development"
+    Project     = "hackhaton"
+  }
 }
 
-# SQS
+# ========================================
+# SQS Variables
+# ========================================
+
 variable "sqs_queues" {
-  description = "Mapa de filas SQS a serem criadas. A chave é um identificador único e o valor contém as configurações da fila."
+  description = "Map of SQS queues to create"
   type = map(object({
     queue_name                 = string
     delay_seconds              = optional(number, 0)
@@ -29,15 +52,38 @@ variable "sqs_queues" {
   default = {}
 }
 
+# ========================================
+# SES Variables
+# ========================================
+
 variable "ses_email" {
-  type = string
+  description = "Email to verify with SES"
+  type        = string
 }
 
 variable "role_arn" {
-  type = string
+  description = "IAM role ARN for SES"
+  type        = string
+  default     = "arn:aws:iam::000000000000:role/lambda-role"
 }
+
+# ========================================
+# S3 Variables
+# ========================================
 
 variable "bucket_name" {
-  type = string
+  description = "S3 bucket name for video storage"
+  type        = string
 }
 
+variable "s3_input_bucket" {
+  description = "S3 bucket name for input videos"
+  type        = string
+  default     = "video-input-storage"
+}
+
+variable "s3_processed_bucket" {
+  description = "S3 bucket name for processed videos"
+  type        = string
+  default     = "video-processed-storage"
+}
