@@ -29,4 +29,7 @@ provider "aws" {
       iam = var.localstack_endpoint
     }
   }
+
+  # Force S3 to use path-style URLs for LocalStack
+  s3_use_path_style = var.use_localstack
 }

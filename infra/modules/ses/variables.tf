@@ -7,3 +7,9 @@ variable "allowed_principals" {
   description = "ARNs que podem enviar email via SES (ex: role da Lambda)"
   type        = list(string)
 }
+
+variable "create_policy" {
+  description = "Create SES identity policy (set to false for LocalStack compatibility)"
+  type        = bool
+  default     = true
+}
