@@ -1,12 +1,12 @@
 variable "bucket_name" {
-  description = "Nome do bucket S3"
+  description = "S3 bucket name"
   type        = string
 }
 
-variable "environment" {
-  description = "Ambiente de deploy"
-  type        = string
-  default     = "dev"
+variable "tags" {
+  description = "Tags to apply to resources"
+  type        = map(string)
+  default     = {}
 }
 
 variable "sqs_queue_url" {

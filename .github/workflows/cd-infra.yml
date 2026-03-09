@@ -59,10 +59,13 @@ jobs:
         run: terraform validate
         working-directory: infra
 
-      - name: Import existing S3 buckets (idempotent)
+      - name: Import existing S3 bucket (idempotent)
         run: |
-          terraform import module.s3_input.aws_s3_bucket.process_bucket video-input-storage || true
-          terraform import aws_s3_bucket.s_processed video-processed-storage || true
+          if ! terraform state show 'module.s3.aws_s3_bucket.nextime_video' > /dev/null 2>&1; then
+            terraform import 'module.s3.aws_s3_bucket.nextime_video' nextime-frame-video-storage
+          else
+            echo "module.s3.aws_s3_bucket.nextime_video already in state, skipping import"
+          fi
         working-directory: infra
 
       - name: Terraform Plan
