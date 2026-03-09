@@ -1,7 +1,9 @@
-aws_region = "us-east-1"
+aws_region     = "us-east-1"
+use_localstack = false
 
 tags = {
-  Owner = "nexTime-frame"
+  Owner       = "nexTime-frame"
+  Environment = "production"
 }
 
 sqs_queues = {
@@ -25,7 +27,7 @@ sqs_queues = {
     max_receive_count          = 3
     enable_queue_policy        = false
   },
-  "video-uploaded-event" = {
+  "video-processed-event" = {
     queue_name                 = "video-processed-event"
     delay_seconds              = 0
     max_message_size           = 262144

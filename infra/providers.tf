@@ -6,9 +6,12 @@ terraform {
     }
   }
 
-  # Backend configuration supports both local and S3
-  # For LocalStack: use local backend in terraform.tfvars
-  # For AWS: configure s3 backend in terraform.tfvars
+  backend "s3" {
+    bucket  = "nextime-frame-state-bucket"
+    key     = "infra-messaging/infra.tfstate"
+    region  = "us-east-1"
+    encrypt = true
+  }
 }
 
 provider "aws" {
@@ -23,10 +26,13 @@ provider "aws" {
   dynamic "endpoints" {
     for_each = var.use_localstack ? [1] : []
     content {
-      sqs = var.localstack_endpoint
-      s3  = var.localstack_endpoint
-      ses = var.localstack_endpoint
-      iam = var.localstack_endpoint
+      sqs          = var.localstack_endpoint
+      s3           = var.localstack_endpoint
+      ses          = var.localstack_endpoint
+      iam          = var.localstack_endpoint
+      cognitoidp   = var.localstack_endpoint
+      apigateway   = var.localstack_endpoint
+      apigatewayv2 = var.localstack_endpoint
     }
   }
 
