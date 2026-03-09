@@ -30,13 +30,14 @@ output "sqs_queues" {
   }
 }
 
-output "s3_input_bucket" {
-  value = module.s3_input.s3_bucket_name
+output "s3_bucket_name" {
+  description = "Nome do bucket S3 único para armazenamento de vídeos"
+  value       = module.s3.s3_bucket_name
 }
 
-
-output "s3_processed_bucket" {
-  value = aws_s3_bucket.s_processed.id
+output "s3_bucket_arn" {
+  description = "ARN do bucket S3 único para armazenamento de vídeos"
+  value       = module.s3.s3_bucket_arn
 }
 
 output "ses_email_identity_arns" {
