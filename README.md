@@ -185,7 +185,7 @@ O projeto utiliza um backend S3 para armazenar o state do Terraform. Configure o
 
 ```hcl
 backend "s3" {
-  bucket  = "nextime-frame-state-bucket"
+  bucket  = "nextime-frame-state-bucket-s3"
   key     = "messaging/infra.tfstate"
   region  = "us-east-1"
   encrypt = true

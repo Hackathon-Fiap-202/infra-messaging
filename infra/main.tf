@@ -1,3 +1,6 @@
+# Resolve current account ID without hardcoding it
+data "aws_caller_identity" "current" {}
+
 module "sqs" {
   for_each                   = var.sqs_queues
   source                     = "./modules/sqs"
@@ -21,13 +24,22 @@ module "ses" {
   email_address = var.ses_email
 
   allowed_principals = [
-    var.role_arn
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
   ]
+
+  create_policy = true
 }
 
-module "s3" {
-  source = "./modules/s3"
-  bucket_name = var.bucket_name
-  sqs_queue_arn = module.sqs["video-uploaded-event"].sqs_queue_arn
-  sqs_queue_url = module.sqs["video-uploaded-event"].sqs_queue_url
+module "s3_input" {
+  source        = "./modules/s3"
+  bucket_name   = var.s3_input_bucket
+  sqs_queue_arn = module.sqs["video-process-command"].sqs_queue_arn
+  sqs_queue_url = module.sqs["video-process-command"].sqs_queue_url
+}
+
+resource "aws_s3_bucket" "s_processed" {
+  bucket = var.s3_processed_bucket
+  tags = merge(var.tags, {
+    Name = var.s3_processed_bucket
+  })
 }
