@@ -8,18 +8,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "use_localstack" {
-  description = "Use LocalStack instead of AWS"
-  type        = bool
-  default     = true
-}
-
-variable "localstack_endpoint" {
-  description = "LocalStack endpoint URL"
-  type        = string
-  default     = "http://localhost:4566"
-}
-
 variable "tags" {
   description = "Tags applied to resources"
   type        = map(string)
@@ -59,12 +47,6 @@ variable "sqs_queues" {
 variable "ses_email" {
   description = "Email to verify with SES"
   type        = string
-}
-
-variable "role_arn" {
-  description = "IAM role ARN for SES"
-  type        = string
-  default     = "arn:aws:iam::000000000000:role/lambda-role"
 }
 
 # ========================================

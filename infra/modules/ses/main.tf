@@ -29,6 +29,7 @@ data "aws_iam_policy_document" "ses_identity_policy" {
 }
 
 resource "aws_ses_identity_policy" "this" {
+  count    = var.create_policy ? 1 : 0
   identity = aws_ses_email_identity.this.arn
   name     = "allow-send-from-lambda"
   policy   = data.aws_iam_policy_document.ses_identity_policy.json
