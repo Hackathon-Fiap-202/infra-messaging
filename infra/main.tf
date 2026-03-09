@@ -24,7 +24,7 @@ module "ses" {
     var.role_arn
   ]
 
-  create_policy = !var.use_localstack
+  create_policy = true
 }
 
 module "s3_input" {

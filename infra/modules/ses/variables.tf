@@ -9,7 +9,7 @@ variable "allowed_principals" {
 }
 
 variable "create_policy" {
-  description = "Create SES identity policy (set to false for LocalStack compatibility)"
+  description = "Create SES identity policy"
   type        = bool
   default     = true
 }

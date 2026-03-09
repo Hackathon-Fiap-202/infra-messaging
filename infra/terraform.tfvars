@@ -1,5 +1,4 @@
-aws_region     = "us-east-1"
-use_localstack = false
+aws_region = "us-east-1"
 
 tags = {
   Owner       = "nexTime-frame"
