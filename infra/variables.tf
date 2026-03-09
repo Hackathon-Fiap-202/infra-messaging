@@ -53,19 +53,8 @@ variable "ses_email" {
 # S3 Variables
 # ========================================
 
-variable "bucket_name" {
-  description = "S3 bucket name for video storage"
+variable "s3_bucket_name" {
+  description = "Single S3 bucket name for all video storage (input and processed)"
   type        = string
-}
-
-variable "s3_input_bucket" {
-  description = "S3 bucket name for input videos"
-  type        = string
-  default     = "video-input-storage"
-}
-
-variable "s3_processed_bucket" {
-  description = "S3 bucket name for processed videos"
-  type        = string
-  default     = "video-processed-storage"
+  default     = "nextime-frame-video-storage"
 }
