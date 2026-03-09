@@ -27,9 +27,16 @@ module "ses" {
   create_policy = !var.use_localstack
 }
 
-module "s3" {
+module "s3_input" {
   source        = "./modules/s3"
-  bucket_name   = var.bucket_name
-  sqs_queue_arn = module.sqs["video-uploaded-event"].sqs_queue_arn
-  sqs_queue_url = module.sqs["video-uploaded-event"].sqs_queue_url
+  bucket_name   = var.s3_input_bucket
+  sqs_queue_arn = module.sqs["video-process-command"].sqs_queue_arn
+  sqs_queue_url = module.sqs["video-process-command"].sqs_queue_url
+}
+
+resource "aws_s3_bucket" "s_processed" {
+  bucket = var.s3_processed_bucket
+  tags = merge(var.tags, {
+    Name = var.s3_processed_bucket
+  })
 }

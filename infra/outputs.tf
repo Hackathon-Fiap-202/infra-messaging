@@ -30,6 +30,15 @@ output "sqs_queues" {
   }
 }
 
+output "s3_input_bucket" {
+  value = module.s3_input.s3_bucket_name
+}
+
+
+output "s3_processed_bucket" {
+  value = aws_s3_bucket.s_processed.id
+}
+
 output "ses_email_identity_arns" {
   description = "Mapa de ARNs das identidades de email do SES (chave: identificador da identidade, valor: ARN)"
   value       = module.ses.ses_email_identity_arn
