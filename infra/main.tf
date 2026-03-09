@@ -1,3 +1,6 @@
+# Resolve current account ID without hardcoding it
+data "aws_caller_identity" "current" {}
+
 module "sqs" {
   for_each                   = var.sqs_queues
   source                     = "./modules/sqs"
@@ -21,7 +24,7 @@ module "ses" {
   email_address = var.ses_email
 
   allowed_principals = [
-    var.role_arn
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
   ]
 
   create_policy = true

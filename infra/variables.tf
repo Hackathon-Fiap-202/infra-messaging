@@ -49,12 +49,6 @@ variable "ses_email" {
   type        = string
 }
 
-variable "role_arn" {
-  description = "IAM role ARN for SES"
-  type        = string
-  default     = "arn:aws:iam::000000000000:role/lambda-role"
-}
-
 # ========================================
 # S3 Variables
 # ========================================

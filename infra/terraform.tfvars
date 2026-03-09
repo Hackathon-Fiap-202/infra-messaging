@@ -38,6 +38,6 @@ sqs_queues = {
   }
 }
 
-ses_email   = "framenextime@gmail.com"
-role_arn    = "arn:aws:iam::383349724220:root"
+ses_email = "framenextime@gmail.com"
+# role_arn is now derived dynamically via data.aws_caller_identity in main.tf
 bucket_name = "nextime-frame-proccess-bucket"
