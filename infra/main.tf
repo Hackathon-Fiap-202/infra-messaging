@@ -30,16 +30,10 @@ module "ses" {
   create_policy = true
 }
 
-module "s3_input" {
+module "s3" {
   source        = "./modules/s3"
-  bucket_name   = var.s3_input_bucket
+  bucket_name   = var.s3_bucket_name
   sqs_queue_arn = module.sqs["video-process-command"].sqs_queue_arn
   sqs_queue_url = module.sqs["video-process-command"].sqs_queue_url
-}
-
-resource "aws_s3_bucket" "s_processed" {
-  bucket = var.s3_processed_bucket
-  tags = merge(var.tags, {
-    Name = var.s3_processed_bucket
-  })
+  tags          = var.tags
 }
