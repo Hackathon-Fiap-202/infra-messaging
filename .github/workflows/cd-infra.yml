@@ -59,6 +59,12 @@ jobs:
         run: terraform validate
         working-directory: infra
 
+      - name: Import existing S3 buckets (idempotent)
+        run: |
+          terraform import module.s3_input.aws_s3_bucket.process_bucket video-input-storage || true
+          terraform import aws_s3_bucket.s_processed video-processed-storage || true
+        working-directory: infra
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan
         working-directory: infra
