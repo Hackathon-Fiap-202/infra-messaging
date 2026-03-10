@@ -32,7 +32,7 @@ sqs_queues = {
     max_message_size           = 262144
     message_retention_seconds  = 345600
     receive_wait_time_seconds  = 0
-    visibility_timeout_seconds = 30
+    visibility_timeout_seconds = 360
     max_receive_count          = 3
     enable_queue_policy        = false
   }
