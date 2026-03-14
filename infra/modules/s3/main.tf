@@ -54,6 +54,7 @@ resource "aws_s3_bucket_notification" "start_process_trigger" {
     queue_arn     = var.sqs_queue_arn
     events        = ["s3:ObjectCreated:*"]
     filter_prefix = "video-input-storage/start-process/"
+    filter_suffix = ".mp4"  # ou o formato do seu vídeo
   }
 
   depends_on = [aws_sqs_queue_policy.allow_s3_events]
